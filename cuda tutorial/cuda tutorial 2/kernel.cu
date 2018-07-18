@@ -1,3 +1,5 @@
+/* 128 block with 128 thread for each block */
+/* do N add calculations parallelly */
 
 #include "cuda_runtime.h"
 #include "device_launch_parameters.h"
@@ -18,6 +20,18 @@ __global__ void add(int * a, int * b, int * c)
 
 int main()
 {
-    
+	int a[N], b[N], c[N];
+	int *dev_a, *dev_b, *dev_c;
+
+	HANDLE_ERROR(cudaMalloc((void**)&dev_a, N * sizeof(int)));
+	HANDLE_ERROR(cudaMalloc((void**)&dev_b, N * sizeof(int)));
+	HANDLE_ERROR(cudaMalloc((void**)&dev_c, N * sizeof(int)));
+
+	for (int i = 0; i < N; i++)
+	{
+		a[i] = i;
+		b[i] = i * i;
+	}
+
     return 0;
 }
