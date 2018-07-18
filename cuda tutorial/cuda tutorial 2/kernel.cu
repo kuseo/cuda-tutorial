@@ -4,6 +4,7 @@
 #include <book.h>
 #include <stdio.h>
 #define N 10
+/* grid는 사용할 블럭들의 범위를 지정 (3차원) */
 
 __global__ void add(int * a, int * b, int * c)
 {
