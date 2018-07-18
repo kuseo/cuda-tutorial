@@ -41,5 +41,20 @@ int main()
 	
 	HANDLE_ERROR(cudaMemcpy(c, dev_c, N * sizeof(int), cudaMemcpyDeviceToHost));
 
+	bool success = true;
+	for (int i = 0; i < N; i++)
+	{
+		if (a[i] + b[i] != c[i])
+		{
+			printf("Error : %d + %d != %d\n", a[i], b[i], c[i]);
+			success = false;
+		}
+		if (success)
+			printf("success\n");
+
+		cudaFree(dev_a);
+		cudaFree(dev_b);
+		cudaFree(dev_c);
+	}
     return 0;
 }
