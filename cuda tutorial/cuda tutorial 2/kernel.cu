@@ -37,5 +37,9 @@ int main()
 	HANDLE_ERROR(cudaMemcpy(dev_b, b, N * sizeof(int), cudaMemcpyHostToDevice));
 	HANDLE_ERROR(cudaMemcpy(dev_c, c, N * sizeof(int), cudaMemcpyHostToDevice));
 
+	add << <128, 128 >> > (dev_a, dev_b, dev_c); //128 block, 128 thread
+	
+	HANDLE_ERROR(cudaMemcpy(c, dev_c, N * sizeof(int), cudaMemcpyDeviceToHost));
+
     return 0;
 }
