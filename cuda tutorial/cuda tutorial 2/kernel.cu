@@ -49,12 +49,12 @@ int main()
 			printf("Error : %d + %d != %d\n", a[i], b[i], c[i]);
 			success = false;
 		}
-		if (success)
-			printf("success\n");
-
-		cudaFree(dev_a);
-		cudaFree(dev_b);
-		cudaFree(dev_c);
 	}
+	if (success)
+		printf("success\n");
+
+	cudaFree(dev_a);
+	cudaFree(dev_b);
+	cudaFree(dev_c);
     return 0;
 }
