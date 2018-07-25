@@ -14,7 +14,7 @@ __global__ void add(int * a, int * b, int * c)
 	while (tid < N)
 	{
 		c[tid] = a[tid] + b[tid];
-		tid += blockDim.x * gridDim.x;
+		tid += blockDim.x * gridDim.x; //(한 블럭당 스레드 수) * (한 그리드당 블럭 수)
 	}
 }
 
