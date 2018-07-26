@@ -7,6 +7,7 @@
 #include <book.h>
 
 #define imin(a,b) (a<b?a:b)
+#define sum_squre(x) (x*(x+1)*(2*x+1))/6
 
 const int N = 33 * 1024; //내적할 벡터의 차원
 const int threadsPerBlock = 256; //한 블럭당 스레드 수
@@ -58,5 +59,69 @@ __global__ void dot(float *a, float *b, float *c)
 
 int main()
 {
-	
+	float *a, *b, c, *partial_c; //host
+	float *dev_a, *dev_b, *dev_partial_c; //device
+
+	/*
+	CPU 메모리 할당
+	*/
+	a = (float*)malloc(sizeof(float)*N);
+	b = (float*)malloc(sizeof(float)*N);
+	partial_c = (float*)malloc(sizeof(float)*blocksPergrid);
+
+	/*
+	GPU 메모리 할당
+	*/
+	HANDLE_ERROR(cudaMalloc((void**)&dev_a, N * sizeof(float)));
+	HANDLE_ERROR(cudaMalloc((void**)&dev_b, N * sizeof(float)));
+	HANDLE_ERROR(cudaMalloc((void**)&dev_partial_c, blocksPergrid * sizeof(float)));
+
+	/*
+	HOST 데이터 생성
+	*/
+	for (int i = 0; i < N; i++)
+	{
+		a[i] = i;
+		b[i] = 2*i;
+	}
+
+	/*
+	host to device
+	memory copy
+	*/
+	HANDLE_ERROR(cudaMemcpy(dev_a, a, N * sizeof(float), cudaMemcpyHostToDevice));
+	HANDLE_ERROR(cudaMemcpy(dev_b, b, N * sizeof(float), cudaMemcpyHostToDevice));
+	HANDLE_ERROR(cudaMemcpy(dev_partial_c, partial_c, blocksPergrid * sizeof(float), cudaMemcpyHostToDevice));
+
+	dot << <blocksPergrid, threadsPerBlock >> > (dev_a, dev_b, dev_partial_c);
+
+	/*
+	device to host
+	memory copy
+	*/
+	HANDLE_ERROR(cudaMemcpy(partial_c, dev_partial_c, sizeof(float)*blocksPergrid, cudaMemcpyDeviceToHost));
+
+	c = 0;
+	for (int i = 0; i < blocksPergrid; i++)
+	{
+		c += partial_c[i];
+	}
+
+	/*
+	확인
+	*/
+	printf("GPU value = %g\nTrue value = %g\n", c, 2 * sum_squre((float)(N - 1)));
+
+	/*
+	free memory
+	*/
+	cudaFree(dev_a);
+	cudaFree(dev_b);
+	cudaFree(dev_partial_c);
+
+	free(a);
+	free(b);
+	free(partial_c);
+
+	return 0;
 }
