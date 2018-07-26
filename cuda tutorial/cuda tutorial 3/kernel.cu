@@ -44,16 +44,19 @@ __global__ void dot(float *a, float *b, float *c)
 	while (i != 0)
 	{
 		if (cacheIndex < i)
-			cache[cacheIndex] += cache[cacheIndex + i];
+			cache[cacheIndex] += cache[cacheIndex + i]; //2배수 인덱스 끼리 짝지어 리덕션
 		__syncthreads();
 		i /= 2;
 	}
 
+	/*
+	최종적으로 첫번째 스레드 하나만 남기는 리덕션이 수행됨.
+	*/
 	if (cacheIndex == 0)
 		c[blockIdx.x] = cache[0];
 }
 
 int main()
 {
-
+	
 }
