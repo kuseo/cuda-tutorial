@@ -36,7 +36,7 @@ int main()
 	HANDLE_ERROR(cudaMalloc((void**)&dev_bitmap, bitmap.image_size()));
 	dim3 grids(DIM / 16, DIM / 16);		//64 * 64 블럭
 	dim3 threads(16, 16);				//각 블럭당 16 * 16 스레드. 각 스레드가 한 비트를 계산
-	//kernel << <grids, threads >> > (dev_bitmap);
+	kernel << <grids, threads >> > (dev_bitmap);
 	HANDLE_ERROR(cudaMemcpy(bitmap.get_bitmap_ptr(), dev_bitmap, bitmap.image_size(), cudaMemcpyDeviceToHost));
 
 	bitmap.display_and_exit();
