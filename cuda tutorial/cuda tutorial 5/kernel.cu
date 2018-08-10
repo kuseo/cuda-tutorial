@@ -47,5 +47,21 @@ int main()
 
 	HANDLE_ERROR(cudaMalloc((void**)dev_bitmap, bitmap.image_size()));
 	HANDLE_ERROR(cudaMalloc((void**)&s, sizeof(Sphere)*SPHERES));
+
+	/*
+	구 데이터를 cpu 메모리에 생성
+	*/
+	Sphere *temp_s = (Sphere*)malloc(sizeof(Sphere)*SPHERES);
+	for (int i = 0; i < SPHERES; i++)
+	{
+		temp_s[i].r = rnd(1.0f);
+		temp_s[i].g = rnd(1.0f);
+		temp_s[i].b = rnd(1.0f);
+		temp_s[i].x = rnd(1000.0f) - 500;
+		temp_s[i].y = rnd(1000.0f) - 500;
+		temp_s[i].z = rnd(1000.0f) - 500;
+		temp_s[i].radius = rnd(100.0f) + 20;
+	}
+
     return 0;
 }
