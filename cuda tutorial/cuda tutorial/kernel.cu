@@ -6,6 +6,7 @@
 #include <cpu_bitmap.h>
 #define DIM 1000
 
+
 struct cuComplex {
 	float   r;
 	float   i;
