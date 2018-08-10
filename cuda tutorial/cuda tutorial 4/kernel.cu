@@ -22,6 +22,7 @@ __global__ void kernel(unsigned char *ptr)
 	/* sin 함수로 색 지정 */
 	const float period = 128.0f;
 	shared[threadIdx.x][threadIdx.y] = 255 * (sinf(2.0f * PI * x / period) + 1.0f) * (sinf(2.0f * PI * y / period) + 1.0f) / 4.0f;
+	__syncthreads();
 	ptr[offset * 4 + 0] = 0;
 	ptr[offset * 4 + 1] = shared[15 - threadIdx.x][15 - threadIdx.y];
 	ptr[offset * 4 + 2] = 0;
@@ -37,10 +38,11 @@ int main()
 	dim3 grids(DIM / 16, DIM / 16);		//64 * 64 블럭
 	dim3 threads(16, 16);				//각 블럭당 16 * 16 스레드. 각 스레드가 한 비트를 계산
 	kernel << <grids, threads >> > (dev_bitmap);
-	HANDLE_ERROR(cudaMemcpy(bitmap.get_bitmap_ptr(), dev_bitmap, bitmap.image_size(), cudaMemcpyDeviceToHost));
+	HANDLE_ERROR(cudaMemcpy(bitmap.get_ptr(), dev_bitmap, bitmap.image_size(), cudaMemcpyDeviceToHost));
+	HANDLE_ERROR(cudaFree(dev_bitmap));
 
 	bitmap.display_and_exit();
-	cudaFree(dev_bitmap);
+	
 
     return 0;
 }
