@@ -5,6 +5,7 @@
 #include <cmath>
 #include <cpu_bitmap.h>
 #include <book.h>
+#include <time.h>
 
 #define rnd(x) (x*rand()/RAND_MAX)
 #define DIM 1024
@@ -80,6 +81,8 @@ Sphere *s;
 
 int main()
 {
+	srand(time(NULL));
+
 	CPUBitmap bitmap(DIM, DIM);
 	unsigned char *dev_bitmap;
 
