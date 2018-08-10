@@ -8,7 +8,7 @@
 
 #define rnd(x) (x*rand()/RAND_MAX)
 #define DIM 1024
-#define SPHERES 10
+#define SPHERES 20
 #define INF 2e10f
 
 struct Sphere
@@ -22,6 +22,7 @@ struct Sphere
 
 	/*
 	projective view
+	카메라의 위치는 +INF
 	(ox, oy)에 위치한 픽셀에서 발사한 광선이 구와 충돌하는지 판별. 충돌시 그 깊이값 반환 
 	*/
 	__device__ float hit(float ox, float oy, float *n)
@@ -38,7 +39,7 @@ struct Sphere
 	}
 };
 
-__global__ void kernel(unsigned char *ptr)
+__global__ void kernel(Sphere *s, unsigned char *ptr)
 {
 	int x = threadIdx.x + blockIdx.x * blockDim.x;
 	int y = threadIdx.y + blockIdx.y * blockDim.y;
@@ -52,6 +53,7 @@ __global__ void kernel(unsigned char *ptr)
 
 	/*
 	각 스레드(픽셀)마다 모든 구와의 충돌 검사
+	더 가까운 구로 픽셀 데이터 갱신
 	*/
 	float r = 0, g = 0, b = 0;
 	float maxz = -INF;
@@ -65,9 +67,13 @@ __global__ void kernel(unsigned char *ptr)
 			r = s[i].r*scale;
 			g = s[i].g*scale;
 			b = s[i].b*scale;
+			maxz = t;
 		}
-
 	}
+	ptr[offset*4 + 0] = (int)(r * 255);
+	ptr[offset*4 + 1] = (int)(g * 255);
+	ptr[offset*4 + 2] = (int)(b + 255);
+	ptr[offset*4 + 3] = 255;
 }
 
 Sphere *s;
@@ -80,7 +86,7 @@ int main()
 	/*
 	gpu 메모리 할당
 	*/
-	HANDLE_ERROR(cudaMalloc((void**)dev_bitmap, bitmap.image_size()));
+	HANDLE_ERROR(cudaMalloc((void**)&dev_bitmap, bitmap.image_size()));
 	HANDLE_ERROR(cudaMalloc((void**)&s, sizeof(Sphere)*SPHERES));
 
 	/*
@@ -109,7 +115,16 @@ int main()
 	*/
 	dim3 grids(DIM / 16, DIM / 16);	//16*16블럭
 	dim3 threads(16, 16);			//블럭당 16*16스레드
-	//kernel << <grids, threads >> > (dev_bitmap);
+	kernel << <grids, threads >> > (s, dev_bitmap);
 
-    return 0;
+	/*
+	gpu 메모리로부터 비트맵 복사
+	*/
+	HANDLE_ERROR(cudaMemcpy(bitmap.get_ptr(), dev_bitmap, bitmap.image_size(), cudaMemcpyDeviceToHost));
+	
+	bitmap.display_and_exit();
+    
+	cudaFree(dev_bitmap);
+	cudaFree(s);
+	return 0;
 }
