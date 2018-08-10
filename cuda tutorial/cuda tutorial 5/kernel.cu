@@ -6,6 +6,9 @@
 #include <cpu_bitmap.h>
 #include <book.h>
 
+#define rnd(x) (x*rand()/RAND_MAX)
+#define DIM 1024
+#define SPHERES 10
 #define INF 2e10f
 
 struct Sphere
@@ -35,8 +38,14 @@ struct Sphere
 	}
 };
 
+Sphere *s;
+
 int main()
 {
-    
+	CPUBitmap bitmap(DIM, DIM);
+	unsigned char *dev_bitmap;
+
+	HANDLE_ERROR(cudaMalloc((void**)dev_bitmap, bitmap.image_size()));
+	HANDLE_ERROR(cudaMalloc((void**)&s, sizeof(Sphere)*SPHERES));
     return 0;
 }
