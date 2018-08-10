@@ -40,7 +40,9 @@ struct Sphere
 	}
 };
 
-__global__ void kernel(Sphere *s, unsigned char *ptr)
+__constant__ Sphere s[SPHERES];
+
+__global__ void kernel(unsigned char *ptr)
 {
 	int x = threadIdx.x + blockIdx.x * blockDim.x;
 	int y = threadIdx.y + blockIdx.y * blockDim.y;
@@ -76,8 +78,6 @@ __global__ void kernel(Sphere *s, unsigned char *ptr)
 	ptr[offset*4 + 2] = (int)(b * 255);
 	ptr[offset*4 + 3] = 255;
 }
-
-__constant__ Sphere s[SPHERES];
 
 int main()
 {
@@ -119,7 +119,7 @@ int main()
 	*/
 	dim3 grids(DIM / 16, DIM / 16);	//16*16블럭
 	dim3 threads(16, 16);			//블럭당 16*16스레드
-	kernel << <grids, threads >> > (s, dev_bitmap);
+	kernel << <grids, threads >> > (dev_bitmap);
 
 	/*
 	gpu 메모리로부터 비트맵 복사
