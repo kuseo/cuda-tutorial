@@ -129,6 +129,5 @@ int main()
 	bitmap.display_and_exit();
     
 	cudaFree(dev_bitmap);
-	cudaFree(s);
 	return 0;
 }
