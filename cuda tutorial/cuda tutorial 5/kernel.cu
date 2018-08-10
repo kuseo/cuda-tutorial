@@ -77,7 +77,7 @@ __global__ void kernel(Sphere *s, unsigned char *ptr)
 	ptr[offset*4 + 3] = 255;
 }
 
-Sphere *s;
+__constant__ Sphere s[SPHERES];
 
 int main()
 {
@@ -90,7 +90,7 @@ int main()
 	gpu 메모리 할당
 	*/
 	HANDLE_ERROR(cudaMalloc((void**)&dev_bitmap, bitmap.image_size()));
-	HANDLE_ERROR(cudaMalloc((void**)&s, sizeof(Sphere)*SPHERES));
+	//HANDLE_ERROR(cudaMalloc((void**)&s, sizeof(Sphere)*SPHERES));
 
 	/*
 	구 데이터를 cpu 메모리에 생성
@@ -110,7 +110,8 @@ int main()
 	/*
 	gpu 메모리로 구 데이터 복사
 	*/
-	HANDLE_ERROR(cudaMemcpy(s, temp_s, sizeof(Sphere)*SPHERES, cudaMemcpyHostToDevice));
+	//HANDLE_ERROR(cudaMemcpy(s, temp_s, sizeof(Sphere)*SPHERES, cudaMemcpyHostToDevice));
+	HANDLE_ERROR(cudaMemcpyToSymbol(s, temp_s, sizeof(Sphere)*SPHERES));
 	free(temp_s);
 
 	/*
