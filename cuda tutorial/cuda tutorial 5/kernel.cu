@@ -72,7 +72,7 @@ __global__ void kernel(Sphere *s, unsigned char *ptr)
 	}
 	ptr[offset*4 + 0] = (int)(r * 255);
 	ptr[offset*4 + 1] = (int)(g * 255);
-	ptr[offset*4 + 2] = (int)(b + 255);
+	ptr[offset*4 + 2] = (int)(b * 255);
 	ptr[offset*4 + 3] = 255;
 }
 
