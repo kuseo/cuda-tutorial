@@ -11,6 +11,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cuda tutorial 3", "cuda tut
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cuda tutorial 4", "cuda tutorial 4\cuda tutorial 4.vcxproj", "{CD2CC93B-5797-4110-AE80-9417401055D3}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cuda tutorial 5", "cuda tutorial 5\cuda tutorial 5.vcxproj", "{B7D46B05-E25C-49C9-90AE-537422493DB6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -33,6 +35,10 @@ Global
 		{CD2CC93B-5797-4110-AE80-9417401055D3}.Debug|x64.Build.0 = Debug|x64
 		{CD2CC93B-5797-4110-AE80-9417401055D3}.Release|x64.ActiveCfg = Release|x64
 		{CD2CC93B-5797-4110-AE80-9417401055D3}.Release|x64.Build.0 = Release|x64
+		{B7D46B05-E25C-49C9-90AE-537422493DB6}.Debug|x64.ActiveCfg = Debug|x64
+		{B7D46B05-E25C-49C9-90AE-537422493DB6}.Debug|x64.Build.0 = Debug|x64
+		{B7D46B05-E25C-49C9-90AE-537422493DB6}.Release|x64.ActiveCfg = Release|x64
+		{B7D46B05-E25C-49C9-90AE-537422493DB6}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
