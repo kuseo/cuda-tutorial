@@ -38,6 +38,38 @@ struct Sphere
 	}
 };
 
+__global__ void kernel(unsigned char *ptr)
+{
+	int x = threadIdx.x + blockIdx.x * blockDim.x;
+	int y = threadIdx.y + blockIdx.y * blockDim.y;
+	int offset = x + y * blockDim.x*gridDim.x;
+	
+	/*
+	z축이 화면의 원점에 오도록 함
+	*/
+	float ox = (x - DIM / 2);
+	float oy = (y - DIM / 2);
+
+	/*
+	각 스레드(픽셀)마다 모든 구와의 충돌 검사
+	*/
+	float r = 0, g = 0, b = 0;
+	float maxz = -INF;
+	for (int i = 0; i < SPHERES; i++)
+	{
+		float n = 0;
+		float t = s[i].hit(ox, oy, &n);
+		if (t > maxz)
+		{
+			float scale = n;
+			r = s[i].r*scale;
+			g = s[i].g*scale;
+			b = s[i].b*scale;
+		}
+
+	}
+}
+
 Sphere *s;
 
 int main()
@@ -45,6 +77,9 @@ int main()
 	CPUBitmap bitmap(DIM, DIM);
 	unsigned char *dev_bitmap;
 
+	/*
+	gpu 메모리 할당
+	*/
 	HANDLE_ERROR(cudaMalloc((void**)dev_bitmap, bitmap.image_size()));
 	HANDLE_ERROR(cudaMalloc((void**)&s, sizeof(Sphere)*SPHERES));
 
@@ -62,6 +97,19 @@ int main()
 		temp_s[i].z = rnd(1000.0f) - 500;
 		temp_s[i].radius = rnd(100.0f) + 20;
 	}
+
+	/*
+	gpu 메모리로 구 데이터 복사
+	*/
+	HANDLE_ERROR(cudaMemcpy(s, temp_s, sizeof(Sphere)*SPHERES, cudaMemcpyHostToDevice));
+	free(temp_s);
+
+	/*
+	kernel 실행
+	*/
+	dim3 grids(DIM / 16, DIM / 16);	//16*16블럭
+	dim3 threads(16, 16);			//블럭당 16*16스레드
+	//kernel << <grids, threads >> > (dev_bitmap);
 
     return 0;
 }
