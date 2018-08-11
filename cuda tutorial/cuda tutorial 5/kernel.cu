@@ -9,7 +9,7 @@
 
 #define rnd(x) (x*rand()/RAND_MAX)
 #define DIM 1024
-#define SPHERES 20
+#define SPHERES 40
 #define INF 2e10f
 
 struct Sphere
