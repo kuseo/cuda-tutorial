@@ -81,6 +81,14 @@ __global__ void kernel(unsigned char *ptr)
 
 int main()
 {
+	/*
+	성능 측정을 위한 event 함수 호출
+	*/
+	cudaEvent_t start, stop;
+	HANDLE_ERROR(cudaEventCreate(&start));
+	HANDLE_ERROR(cudaEventCreate(&stop));
+	HANDLE_ERROR(cudaEventRecord(start, 0));
+
 	srand(time(NULL));
 
 	CPUBitmap bitmap(DIM, DIM);
@@ -126,6 +134,14 @@ int main()
 	*/
 	HANDLE_ERROR(cudaMemcpy(bitmap.get_ptr(), dev_bitmap, bitmap.image_size(), cudaMemcpyDeviceToHost));
 	
+	HANDLE_ERROR(cudaEventRecord(stop, 0));
+	HANDLE_ERROR(cudaEventSynchronize(stop));
+	float elapsedTime;
+	HANDLE_ERROR(cudaEventElapsedTime(&elapsedTime, start, stop));
+	printf("Time to generate : %3.3f ms\n", elapsedTime);
+	HANDLE_ERROR(cudaEventDestroy(start));
+	HANDLE_ERROR(cudaEventDestroy(stop));
+
 	bitmap.display_and_exit();
     
 	cudaFree(dev_bitmap);
