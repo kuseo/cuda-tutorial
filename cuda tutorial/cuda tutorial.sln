@@ -13,8 +13,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cuda tutorial 4", "cuda tut
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cuda tutorial 5", "cuda tutorial 5\cuda tutorial 5.vcxproj", "{B7D46B05-E25C-49C9-90AE-537422493DB6}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cuda tutorial 6", "cuda tutorial 6\cuda tutorial 6.vcxproj", "{A290D542-BD12-4311-87D5-7EACB3893BE1}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "non cuda", "non cuda\non cuda.vcxproj", "{6B732315-E099-434A-B117-2E6C46E6111A}"
 EndProject
 Global
@@ -55,12 +53,6 @@ Global
 		{B7D46B05-E25C-49C9-90AE-537422493DB6}.Release|x64.ActiveCfg = Release|x64
 		{B7D46B05-E25C-49C9-90AE-537422493DB6}.Release|x64.Build.0 = Release|x64
 		{B7D46B05-E25C-49C9-90AE-537422493DB6}.Release|x86.ActiveCfg = Release|x64
-		{A290D542-BD12-4311-87D5-7EACB3893BE1}.Debug|x64.ActiveCfg = Debug|x64
-		{A290D542-BD12-4311-87D5-7EACB3893BE1}.Debug|x64.Build.0 = Debug|x64
-		{A290D542-BD12-4311-87D5-7EACB3893BE1}.Debug|x86.ActiveCfg = Debug|x64
-		{A290D542-BD12-4311-87D5-7EACB3893BE1}.Release|x64.ActiveCfg = Release|x64
-		{A290D542-BD12-4311-87D5-7EACB3893BE1}.Release|x64.Build.0 = Release|x64
-		{A290D542-BD12-4311-87D5-7EACB3893BE1}.Release|x86.ActiveCfg = Release|x64
 		{6B732315-E099-434A-B117-2E6C46E6111A}.Debug|x64.ActiveCfg = Debug|x64
 		{6B732315-E099-434A-B117-2E6C46E6111A}.Debug|x64.Build.0 = Debug|x64
 		{6B732315-E099-434A-B117-2E6C46E6111A}.Debug|x86.ActiveCfg = Debug|Win32
