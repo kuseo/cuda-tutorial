@@ -11,7 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{A290D542-BD12-4311-87D5-7EACB3893BE1}</ProjectGuid>
+    <ProjectGuid>{0246A51D-3794-48AB-8903-97C3F7ADF9C0}</ProjectGuid>
     <RootNamespace>cuda_tutorial_6</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
