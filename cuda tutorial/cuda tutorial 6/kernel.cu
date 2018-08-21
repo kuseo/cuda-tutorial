@@ -1,4 +1,6 @@
 
+#define GL_GLEXT_PROTOTYPES
+
 #include "cuda_runtime.h"
 #include "device_launch_parameters.h"
 
@@ -7,6 +9,8 @@
 #include <cuda_gl_interop.h>
 #include <book.h>
 #include <cpu_bitmap.h>
+
+
 #define DIM 512
 
 /*
@@ -15,6 +19,12 @@
 GLuint bufferObj;
 cudaGraphicsResource *resource;
 
+void draw()
+{
+
+
+	glutSwapBuffers();
+}
 int main(int argc, char **argv)
 {
 	cudaDeviceProp prop;	//cuda device
@@ -35,7 +45,19 @@ int main(int argc, char **argv)
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE);
 	glutInitWindowSize(DIM, DIM);
 	glutCreateWindow("bitmap");
+	
+	glGenBuffers(1, &bufferObj);	//버퍼 핸들 생성
+	glBindBuffer(GL_PIXEL_UNPACK_BUFFER_ARB, bufferObj);	//핸들을 픽셀 버퍼에 바인딩
 
-	//glutMainLoop();
+	/*
+	OpenGL 드라이버에게 버퍼를 할당하도록 요청.
+	버퍼는 런타임 중 여러차례 수정되므로 GL_DYNAMIC_DRAW_ARB 의 패턴을 따른다.
+	*/
+	glBufferData(GL_PIXEL_PACK_BUFFER_ARB, DIM*DIM * 4, NULL, GL_DYNAMIC_DRAW_ARB);
+	
+
+
+	glutDisplayFunc(draw);
+	glutMainLoop();
     return 0;
 }
