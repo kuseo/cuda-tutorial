@@ -51,10 +51,17 @@ int main(int argc, char **argv)
 
 	/*
 	OpenGL 드라이버에게 버퍼를 할당하도록 요청.
+	DIM * DIM 크기의 32 비트 데이터 버퍼를 생성함.
 	버퍼는 런타임 중 여러차례 수정되므로 GL_DYNAMIC_DRAW_ARB 의 패턴을 따른다.
 	*/
-	glBufferData(GL_PIXEL_PACK_BUFFER_ARB, DIM*DIM * 4, NULL, GL_DYNAMIC_DRAW_ARB);
+	glBufferData(GL_PIXEL_PACK_BUFFER_ARB, DIM * DIM * 4, NULL, GL_DYNAMIC_DRAW_ARB);
 	
+	/*
+	OpenGL과 CUDA 양족에서 PBO를 사용할 것임을 CUDA 런타임에 명시.
+	resource에 버퍼를 가리키는 CUDA 전용 핸들이 기록됨.
+	버퍼의 접근 패턴은 오직 읽기 또는 오직 쓰기 전용이 아닌 None.
+	*/
+	HANDLE_ERROR(cudaGraphicsGLRegisterBuffer(&resource, bufferObj, cudaGraphicsMapFlagsNone));
 
 
 	glutDisplayFunc(draw);
