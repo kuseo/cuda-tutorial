@@ -42,14 +42,26 @@ __global__ void kernel(uchar4 * ptr)
 
 void draw()
 {
-
-
+	/*
+	bufferObj를 공유 버퍼로 바인딩 했으므로 마지막 인자는 NULL
+	*/
+	glDrawPixels(DIM, DIM, GL_RGBA, GL_UNSIGNED_BYTE, 0);
 	glutSwapBuffers();
 }
 
 void key(unsigned char key, int x, int y)
 {
-
+	/*
+	ESC 키로 어플리케이션 종료
+	*/
+	switch (key)
+	{
+	case '27':
+		HANDLE_ERROR(cudaGraphicsUnregisterResource(resource));
+		glBindBuffer(GL_PIXEL_UNPACK_BUFFER_ARB, 0);	//공유 버퍼 바인딩 해제
+		glDeleteBuffers(1, &bufferObj);
+		exit(0);
+	}
 }
 
 
@@ -74,7 +86,7 @@ int main(int argc, char **argv)
 	glutInitWindowSize(DIM, DIM);
 	glutCreateWindow("bitmap");
 	
-	glGenBuffers(1, &bufferObj);	//버퍼 핸들 생성
+	glGenBuffers(1, &bufferObj);	//공유 버퍼 핸들 생성
 	glBindBuffer(GL_PIXEL_UNPACK_BUFFER_ARB, bufferObj);	//핸들을 픽셀 버퍼에 바인딩
 
 	/*
