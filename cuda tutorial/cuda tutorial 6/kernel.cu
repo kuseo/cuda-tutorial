@@ -1,3 +1,7 @@
+/*
+GPU에서 생성된 이미지 데이터가 CPU를 거치지 않고
+곧바로 버퍼 전체를 OpenGL에 넘겨지는 예제  
+*/
 
 #define GL_GLEXT_PROTOTYPES
 
@@ -63,7 +67,7 @@ int main(int argc, char **argv)
 
 	/*
 	OpenGL 드라이버에게 버퍼를 할당하도록 요청.
-	DIM * DIM 크기의 32 비트 데이터 버퍼를 생성함.
+	DIM * DIM 크기의 32 비트 데이터 버퍼를 생성함.(handle)
 	버퍼는 런타임 중 여러차례 수정되므로 GL_DYNAMIC_DRAW_ARB 의 패턴을 따른다.
 	*/
 	glBufferData(GL_PIXEL_UNPACK_BUFFER_ARB, DIM * DIM * 4, NULL, GL_DYNAMIC_DRAW_ARB);
@@ -76,7 +80,7 @@ int main(int argc, char **argv)
 	HANDLE_ERROR(cudaGraphicsGLRegisterBuffer(&resource, bufferObj, cudaGraphicsMapFlagsNone));
 
 	/*
-	커널에 전달될 디바이스 메모리의 실제 주소 생성
+	커널에 전달될 디바이스 메모리의 실제 주소 요청(pointer)
 	*/
 	uchar4* devPtr;		//x y z w
 	size_t size;
