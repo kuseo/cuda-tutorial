@@ -19,12 +19,24 @@
 GLuint bufferObj;
 cudaGraphicsResource *resource;
 
+__global__ void kernal(uchar4 * ptr)
+{
+
+}
+
 void draw()
 {
 
 
 	glutSwapBuffers();
 }
+
+void key(unsigned char key, int x, int y)
+{
+
+}
+
+
 int main(int argc, char **argv)
 {
 	cudaDeviceProp prop;	//cuda device
@@ -54,7 +66,7 @@ int main(int argc, char **argv)
 	DIM * DIM 크기의 32 비트 데이터 버퍼를 생성함.
 	버퍼는 런타임 중 여러차례 수정되므로 GL_DYNAMIC_DRAW_ARB 의 패턴을 따른다.
 	*/
-	glBufferData(GL_PIXEL_PACK_BUFFER_ARB, DIM * DIM * 4, NULL, GL_DYNAMIC_DRAW_ARB);
+	glBufferData(GL_PIXEL_UNPACK_BUFFER_ARB, DIM * DIM * 4, NULL, GL_DYNAMIC_DRAW_ARB);
 	
 	/*
 	OpenGL과 CUDA 양족에서 PBO를 사용할 것임을 CUDA 런타임에 명시.
@@ -63,7 +75,21 @@ int main(int argc, char **argv)
 	*/
 	HANDLE_ERROR(cudaGraphicsGLRegisterBuffer(&resource, bufferObj, cudaGraphicsMapFlagsNone));
 
+	/*
+	커널에 전달될 디바이스 메모리의 실제 주소 생성
+	*/
+	uchar4* devPtr;		//x y z w
+	size_t size;
+	HANDLE_ERROR(cudaGraphicsMapResources(1, &resource, NULL));
+	HANDLE_ERROR(cudaGraphicsResourceGetMappedPointer((void**)devPtr, &size, resource));
 
+	dim3 grids(DIM / 16, DIM / 16);
+	dim3 threads(16, 16);
+	kernal << <grids, threads >> > (devPtr);
+
+	HANDLE_ERROR(cudaGraphicsUnmapResources(1, &resource, NULL));
+
+	glutKeyboardFunc(key);
 	glutDisplayFunc(draw);
 	glutMainLoop();
     return 0;
