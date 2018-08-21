@@ -9,11 +9,12 @@ GPU에서 생성된 이미지 데이터가 CPU를 거치지 않고
 #include "device_launch_parameters.h"
 
 #include <stdio.h>
+#include <cmath>
+
 #include <GL/glut.h>
 #include <cuda_gl_interop.h>
 #include <book.h>
 #include <cpu_bitmap.h>
-
 
 #define DIM 512
 
@@ -23,9 +24,20 @@ GPU에서 생성된 이미지 데이터가 CPU를 거치지 않고
 GLuint bufferObj;
 cudaGraphicsResource *resource;
 
-__global__ void kernal(uchar4 * ptr)
+__global__ void kernel(uchar4 * ptr)
 {
+	int x = threadIdx.x + blockIdx.x * blockDim.x;
+	int y = threadIdx.y + blockIdx.y * blockDim.y;
+	int offset = x + y * blockDim.x * gridDim.x;
 
+	float fx = x / (float)DIM - 0.5f;
+	float fy = y / (float)DIM - 0.5f;
+	unsigned char green = 128 + 127 * sin(abs(fx * 100) - abs(fy * 100));
+
+	ptr[offset].x = 0;
+	ptr[offset].y = green;
+	ptr[offset].z = 0;
+	ptr[offset].w = 255;
 }
 
 void draw()
@@ -89,7 +101,7 @@ int main(int argc, char **argv)
 
 	dim3 grids(DIM / 16, DIM / 16);
 	dim3 threads(16, 16);
-	kernal << <grids, threads >> > (devPtr);
+	kernel << <grids, threads >> > (devPtr);
 
 	HANDLE_ERROR(cudaGraphicsUnmapResources(1, &resource, NULL));
 
