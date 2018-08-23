@@ -5,16 +5,14 @@ GPU에서 생성된 이미지 데이터가 CPU를 거치지 않고
 
 #define GL_GLEXT_PROTOTYPES
 
+#include <cmath>
+#include <cpu_bitmap.h>
 #include "cuda_runtime.h"
 #include "device_launch_parameters.h"
-
-#include <stdio.h>
-#include <cmath>
-
-#include <GL/glut.h>
 #include <cuda_gl_interop.h>
 #include <book.h>
-#include <cpu_bitmap.h>
+
+
 
 #define DIM 512
 
@@ -58,8 +56,8 @@ void key(unsigned char key, int x, int y)
 	{
 	case '27':
 		HANDLE_ERROR(cudaGraphicsUnregisterResource(resource));
-		glBindBuffer(GL_PIXEL_UNPACK_BUFFER_ARB, 0);	//공유 버퍼 바인딩 해제
-		glDeleteBuffers(1, &bufferObj);
+		glBindBufferARB(GL_PIXEL_UNPACK_BUFFER_ARB, 0);	//공유 버퍼 바인딩 해제
+		glDeleteBuffersARB(1, &bufferObj);
 		exit(0);
 	}
 }
@@ -86,15 +84,22 @@ int main(int argc, char **argv)
 	glutInitWindowSize(DIM, DIM);
 	glutCreateWindow("bitmap");
 	
-	glGenBuffers(1, &bufferObj);	//공유 버퍼 핸들 생성
-	glBindBuffer(GL_PIXEL_UNPACK_BUFFER_ARB, bufferObj);	//핸들을 픽셀 버퍼에 바인딩
+	GLenum err = glewInit();
+	if (GLEW_OK != err)
+	{
+		/* Problem: glewInit failed, something is seriously wrong. */
+		printf("Error: %s\n", glewGetErrorString(err));
+	}
+
+	glGenBuffersARB(1, &bufferObj);	//공유 버퍼 핸들 생성
+	glBindBufferARB(GL_PIXEL_UNPACK_BUFFER_ARB, bufferObj);	//핸들을 픽셀 버퍼에 바인딩
 
 	/*
 	OpenGL 드라이버에게 버퍼를 할당하도록 요청.
 	DIM * DIM 크기의 32 비트 데이터 버퍼를 생성함.(handle)
 	버퍼는 런타임 중 여러차례 수정되므로 GL_DYNAMIC_DRAW_ARB 의 패턴을 따른다.
 	*/
-	glBufferData(GL_PIXEL_UNPACK_BUFFER_ARB, DIM * DIM * 4, NULL, GL_DYNAMIC_DRAW_ARB);
+	glBufferDataARB(GL_PIXEL_UNPACK_BUFFER_ARB, DIM * DIM * 4, NULL, GL_DYNAMIC_DRAW_ARB);
 	
 	/*
 	OpenGL과 CUDA 양족에서 PBO를 사용할 것임을 CUDA 런타임에 명시.
@@ -106,10 +111,10 @@ int main(int argc, char **argv)
 	/*
 	커널에 전달될 디바이스 메모리의 실제 주소 요청(pointer)
 	*/
-	uchar4* devPtr;		//x y z w
+	uchar4 *devPtr;		//x y z w
 	size_t size;
 	HANDLE_ERROR(cudaGraphicsMapResources(1, &resource, NULL));
-	HANDLE_ERROR(cudaGraphicsResourceGetMappedPointer((void**)devPtr, &size, resource));
+	HANDLE_ERROR(cudaGraphicsResourceGetMappedPointer((void**)&devPtr, &size, resource));
 
 	dim3 grids(DIM / 16, DIM / 16);
 	dim3 threads(16, 16);
